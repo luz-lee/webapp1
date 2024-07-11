@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watermark Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #ccc;
+        }
+        nav {
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: #ccc;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            width: 80%;
+            flex-direction: column;
+            align-items: center;
+        }
+        .upload-area {
+            border: 2px dashed #009688;
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            background-color: #444;
+            margin-bottom: 20px;
+            cursor: pointer;
+            color: #ccc;
+        }
+        .upload-area:hover {
+            background-color: #555;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        input[type="file"], input[type="text"], input[type="submit"] {
+            margin-bottom: 10px;
+            padding: 10px;
+            width: 80%;
+            max-width: 300px;
+            background-color: #555;
+            color: #ccc;
+            border: 1px solid #666;
+        }
+        input[type="submit"] {
+            background-color: #009688;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #00796b;
+        }
+        .result-section {
+            margin: 20px 0;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        .result-section video, .result-section img {
+            max-width: 80%;
+            height: auto;
+            display: block;
+            margin: 10px auto;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        footer a {
+            color: #009688;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        function switchLanguage(lang) {
+            document.documentElement.lang = lang;
+            if(lang === 'ko') {
+                document.getElementById('title').innerText = '워터마킹 애플리케이션';
+                document.getElementById('uploadVideoLabel').innerText = '비디오 업로드';
+                document.getElementById('uploadImageLabel').innerText = '이미지 업로드';
+                document.getElementById('watermarkTextPlaceholder').placeholder = '워터마크 텍스트';
+                document.getElementById('submit').value = '업로드';
+                document.getElementById('dragDropTextVideo').innerText = '여기에 비디오 파일을 드롭하세요';
+                document.getElementById('dragDropTextImage').innerText = '여기에 이미지 파일을 드롭하세요';
+            } else {
+                document.getElementById('title').innerText = 'Watermark Application';
+                document.getElementById('uploadVideoLabel').innerText = 'Upload Video';
+                document.getElementById('uploadImageLabel').innerText = 'Upload Image';
+                document.getElementById('watermarkTextPlaceholder').placeholder = 'Watermark Text';
+                document.getElementById('submit').value = 'Upload';
+                document.getElementById('dragDropTextVideo').innerText = 'Drag & Drop your video here';
+                document.getElementById('dragDropTextImage').innerText = 'Drag & Drop your image here';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var videoDropArea = document.getElementById('video-drop-area');
+            var imageDropArea = document.getElementById('image-drop-area');
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                videoDropArea.addEventListener(eventName, preventDefaults, false);
+                imageDropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            videoDropArea.addEventListener('click', () => document.getElementById('video_file').click());
+            imageDropArea.addEventListener('click', () => document.getElementById('image_file').click());
+
+            document.getElementById('video_file').addEventListener('change', function(e) {
+                var file = this.files[0];
+                updatePreview(file, 'video-preview', 'video-drop-area');
+            });
+
+            document.getElementById('image_file').addEventListener('change', function(e) {
+                var file = this.files[0];
+                updatePreview(file, 'image-preview', 'image-drop-area');
+            });
+
+            function updatePreview(file, previewId, dropAreaId) {
+                var preview = document.getElementById(previewId);
+                var dropArea = document.getElementById(dropAreaId);
+
+                if (preview) {
+                    preview.remove();
+                }
+
+                if (file.type.startsWith('video/')) {
+                    var video = document.createElement('video');
+                    video.id = previewId;
+                    video.src = URL.createObjectURL(file);
+                    video.controls = true;
+                    video.style.maxWidth = '100%';
+                    video.style.height = 'auto';
+                    dropArea.appendChild(video);
+                } else if (file.type.startsWith('image/')) {
+                    var img = document.createElement('img');
+                    img.id = previewId;
+                    img.src = URL.createObjectURL(file);
+                    img.style.maxWidth = '100%';
+                    img.style.height = 'auto';
+                    dropArea.appendChild(img);
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+    <nav>
+        <a href="#" onclick="switchLanguage('en')">English</a> | <a href="#" onclick="switchLanguage('ko')">한국어</a>
+    </nav>
+    <h1 id="title">Watermark Application</h1>
+    <div class="container">
+        <div id="video-drop-area" class="upload-area">
+            <p id="dragDropTextVideo">Drag & Drop your video here</p>
+            <p>or</p>
+            <p>Click to select a file</p>
+        </div>
+        <div id="image-drop-area" class="upload-area">
+            <p id="dragDropTextImage">Drag & Drop your image here</p>
+            <p>or</p>
+            <p>Click to select a file</p>
+        </div>
+    </div>
+    <div class="container">
+        <form action="/" method="post" enctype="multipart/form-data">
+            <input type="file" id="video_file" name="video" accept="video/*" style="display: none;">
+            <input type="file" id="image_file" name="image" accept="image/*" style="display: none;">
+            <input type="text" id="watermarkTextPlaceholder" name="text" placeholder="Watermark Text">
+            <input type="file" id="watermark_image" name="watermark_image" accept="image/*" style="display: none;">
+            <label for="watermark_image" id="uploadWatermarkImageLabel" style="cursor: pointer;">Upload Watermark Image</label>
+            <input type="submit" id="submit" value="Upload">
+        </form>
+    </div>
+
+    <section class="result-section" id="result">
+        {% if original_url %}
+            <h2>Original File</h2>
+            {% if original_url.endswith(('png', 'jpg', 'jpeg')) %}
+                <img src="{{ url_for('uploaded_file', filename=original_url) }}" alt="Original Image">
+            {% else %}
+                <video src="{{ url_for('uploaded_file', filename=original_url) }}" controls></video>
+            {% endif %}
+            <br>
+            <a href="{{ url_for('uploaded_file', filename=original_url) }}" download>Download Original</a>
+        {% endif %}
+        {% if watermarked_url %}
+            <h2>Watermarked File</h2>
+            {% if watermarked_url.endswith(('png', 'jpg', 'jpeg')) %}
+                <img src="{{ url_for('result_file', filename=watermarked_url) }}" alt="Watermarked Image">
+            {% else %}
+                <video src="{{ url_for('result_file', filename=watermarked_url) }}" controls></video>
+            {% endif %}
+            <br>
+            <a href="{{ url_for('result_file', filename=watermarked_url) }}" download>Download Watermarked</a>
+        {% endif %}
+        {% if extracted_url %}
+            <h2>Extracted Watermark</h2>
+            {% if extracted_url.endswith(('png', 'jpg', 'jpeg')) %}
+                <img src="{{ url_for('extract_file', filename=extracted_url) }}" alt="Extracted Watermark Image">
+            {% else %}
+                <video src="{{ url_for('extract_file', filename=extracted_url) }}" controls></video>
+            {% endif %}
+            <br>
+            <a href="{{ url_for('extract_file', filename=extracted_url) }}" download>Download Extracted</a>
+        {% endif %}
+    </section>
+
+    <footer>
+        <a href="{{ url_for('index') }}">Go to Main Page</a>
+    </footer>
+</body>
+</html>

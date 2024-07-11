@@ -1,0 +1,8 @@
+[build]
+  publish = "frontend"
+  command = "echo 'Skipping build step'"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
