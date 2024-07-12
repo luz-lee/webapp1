@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: forensic
+    env: python
+    runtime: python-3.8.12
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python app.py"
+    autoDeploy: true
